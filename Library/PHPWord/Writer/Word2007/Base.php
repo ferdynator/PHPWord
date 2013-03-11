@@ -33,48 +33,56 @@ class PHPWord_Writer_Word2007_Base extends PHPWord_Writer_Word2007_WriterPart {
 		
 		$SfIsObject = ($styleFont instanceof PHPWord_Style_Font) ? true : false;
 		
-		if(!$withoutP) {
-			$objWriter->startElement('w:p');
-			
-			$styleParagraph = $text->getParagraphStyle();
-			$SpIsObject = ($styleParagraph instanceof PHPWord_Style_Paragraph) ? true : false;
-			
-			if($SpIsObject) {
-				$this->_writeParagraphStyle($objWriter, $styleParagraph);
-			} elseif(!$SpIsObject && !is_null($styleParagraph)) {
-				$objWriter->startElement('w:pPr');
-					$objWriter->startElement('w:pStyle');
-						$objWriter->writeAttribute('w:val', $styleParagraph);
-					$objWriter->endElement();
-				$objWriter->endElement();
-			}
-		}
+                $strText = htmlspecialchars($text->getText());
+                // create array of newlines
+                $str_tmp=explode("\n",$strText);
+
+                // cycle through the array and create new paragraph per new line
+                for ($iii = 0; $iii < count($str_tmp); $iii++) {
+                    
+                    if(!$withoutP) {
+                            $objWriter->startElement('w:p');
+
+                            $styleParagraph = $text->getParagraphStyle();
+                            $SpIsObject = ($styleParagraph instanceof PHPWord_Style_Paragraph) ? true : false;
+
+                            if($SpIsObject) {
+                                    $this->_writeParagraphStyle($objWriter, $styleParagraph);
+                            } elseif(!$SpIsObject && !is_null($styleParagraph)) {
+                                    $objWriter->startElement('w:pPr');
+                                            $objWriter->startElement('w:pStyle');
+                                                    $objWriter->writeAttribute('w:val', $styleParagraph);
+                                            $objWriter->endElement();
+                                    $objWriter->endElement();
+                            }
+                    }
+
+                    $strText = htmlspecialchars($text->getText());
+                    $strText = PHPWord_Shared_String::ControlCharacterPHP2OOXML($strText);
+
+                    $objWriter->startElement('w:r');
+
+                            if($SfIsObject) {
+                                    $this->_writeTextStyle($objWriter, $styleFont);
+                            } elseif(!$SfIsObject && !is_null($styleFont)) {
+                                    $objWriter->startElement('w:rPr');
+                                            $objWriter->startElement('w:rStyle');
+                                                    $objWriter->writeAttribute('w:val', $styleFont);
+                                            $objWriter->endElement();
+                                    $objWriter->endElement();
+                            }
+
+                            $objWriter->startElement('w:t');
+                                    $objWriter->writeAttribute('xml:space', 'preserve'); // needed because of drawing spaces before and after text
+                                    $objWriter->writeRaw($strText);
+                            $objWriter->endElement();
+
+                    $objWriter->endElement(); // w:r
 		
-		$strText = htmlspecialchars($text->getText());
-		$strText = PHPWord_Shared_String::ControlCharacterPHP2OOXML($strText);
-		
-		$objWriter->startElement('w:r');
-		
-			if($SfIsObject) {
-				$this->_writeTextStyle($objWriter, $styleFont);
-			} elseif(!$SfIsObject && !is_null($styleFont)) {
-				$objWriter->startElement('w:rPr');
-					$objWriter->startElement('w:rStyle');
-						$objWriter->writeAttribute('w:val', $styleFont);
-					$objWriter->endElement();
-				$objWriter->endElement();
-			}
-		
-			$objWriter->startElement('w:t');
-				$objWriter->writeAttribute('xml:space', 'preserve'); // needed because of drawing spaces before and after text
-				$objWriter->writeRaw($strText);
-			$objWriter->endElement();
-			
-		$objWriter->endElement(); // w:r
-		
-		if(!$withoutP) {
-			$objWriter->endElement(); // w:p
-		}
+                    if(!$withoutP) {
+                            $objWriter->endElement(); // w:p
+                    }
+                }
 	}
 	
 	protected function _writeTextRun(PHPWord_Shared_XMLWriter $objWriter = null, PHPWord_Section_TextRun $textrun) {
