@@ -57,7 +57,8 @@ class PHPWord_Writer_Word2007_Base extends PHPWord_Writer_Word2007_WriterPart {
                             }
                     }
 
-                    $strText = htmlspecialchars($text->getText());
+
+                    $strText = htmlspecialchars($str_tmp[$iii]);
                     $strText = PHPWord_Shared_String::ControlCharacterPHP2OOXML($strText);
 
                     $objWriter->startElement('w:r');
