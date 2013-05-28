@@ -515,15 +515,32 @@ class PHPWord_Writer_Word2007_Base extends PHPWord_Writer_Word2007_WriterPart {
 		$brdSz = $style->getBorderSize();
 		$brdCol = $style->getBorderColor();
 		
+                $gridSpan = $style->getGridSpan();
+                $vMerge = $style->getVMerge();
+		
 		$bTop = (!is_null($brdSz[0])) ? true : false;
 		$bLeft = (!is_null($brdSz[1])) ? true : false;
 		$bRight = (!is_null($brdSz[2])) ? true : false;
 		$bBottom = (!is_null($brdSz[3])) ? true : false;
 		$borders = ($bTop || $bLeft || $bRight || $bBottom) ? true : false;
 		
-		$styles = (!is_null($bgColor) || !is_null($valign) || !is_null($textDir) || $borders) ? true : false;
+		$styles = (!is_null($gridSpan) || !is_null($vMerge) || !is_null($bgColor) || !is_null($valign) || !is_null($textDir) || $borders) ? true : false;
 		
 		if($styles) {
+                        if(!is_null($gridSpan))
+                        {
+                            $objWriter->startElement('w:gridSpan'); 
+                            $objWriter->writeAttribute('w:val', $gridSpan); 
+                            $objWriter->endElement();
+                        }
+
+                        if(!is_null($vMerge))
+                        {
+                            $objWriter->startElement('w:vMerge'); 
+                            $objWriter->writeAttribute('w:val', $vMerge); 
+                            $objWriter->endElement();
+                        }
+                        
 			if(!is_null($textDir)) {
 				$objWriter->startElement('w:textDirection');
 					$objWriter->writeAttribute('w:val', $textDir);
