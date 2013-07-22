@@ -33,7 +33,7 @@ class PHPWord_Writer_Word2007_Base extends PHPWord_Writer_Word2007_WriterPart {
 		
 		$SfIsObject = ($styleFont instanceof PHPWord_Style_Font) ? true : false;
 		
-                $strText = $text->getText(); //htmlspecialchars($text->getText());
+                $strText = htmlspecialchars($text->getText());
                 // create array of newlines
                 $str_tmp=explode("\n",$strText);
 
@@ -277,7 +277,7 @@ class PHPWord_Writer_Word2007_Base extends PHPWord_Writer_Word2007_WriterPart {
 						$objWriter->endElement();
 					$objWriter->endElement();
 				} else {
-					//$text = htmlspecialchars($text);
+					$text = htmlspecialchars($text);
 					$text = PHPWord_Shared_String::ControlCharacterPHP2OOXML($text);
 					
 					$objWriter->startElement('w:r');
@@ -689,7 +689,7 @@ class PHPWord_Writer_Word2007_Base extends PHPWord_Writer_Word2007_WriterPart {
 	}
 	
 	protected function _writeTitle(PHPWord_Shared_XMLWriter $objWriter = null, PHPWord_Section_Title $title) {
-		$text = $title->getText(); //htmlspecialchars($title->getText());
+		$text = htmlspecialchars($title->getText());
 		$text = PHPWord_Shared_String::ControlCharacterPHP2OOXML($text);
 		$anchor = $title->getAnchor();
 		$bookmarkId = $title->getBookmarkId();
