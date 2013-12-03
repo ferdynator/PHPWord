@@ -53,7 +53,7 @@ class PHPWord_Shared_String
 	 * Build control characters array
 	 */
 	private static function _buildControlCharacters() {
-		for ($i = 0; $i <= 19; ++$i) {
+		for ($i = 0; $i <= 31; ++$i) {
 			if ($i != 9 && $i != 10 && $i != 13) {
 				$find = '_x' . sprintf('%04s' , strtoupper(dechex($i))) . '_';
 				$replace = chr($i);

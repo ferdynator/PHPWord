@@ -28,12 +28,32 @@
 
 class PHPWord_Writer_Word2007_Base extends PHPWord_Writer_Word2007_WriterPart {
 	
+	/**
+	 * Returns a sanitized string for XML
+	 *
+	 * Replaces not only html special chars but also characters which are not allowed in XML 1.0. Makes usage
+	 * of the enhanced htmlspecialchars() options which were added in php 5.4 or uses a regular expression as
+	 * fallback.
+	 *
+	 * @param	string	$text	Input string
+	 * @return	string			Sanitized string
+	 * @link	http://en.wikipedia.org/wiki/Valid_characters_in_XML
+	 */
+	protected function _sanitizeText($text) {
+		if (!version_compare(phpversion(), '5.4.0', '>=')) {
+			$text	= htmlspecialchars($text, ENT_XML1 | ENT_DISALLOWED, 'UTF-8');
+		} else {
+			$text	= htmlspecialchars($text);
+		}
+		return $text;
+	}
+
 	protected function _writeText(PHPWord_Shared_XMLWriter $objWriter = null, PHPWord_Section_Text $text, $withoutP = false) {
 		$styleFont = $text->getFontStyle();
 		
 		$SfIsObject = ($styleFont instanceof PHPWord_Style_Font) ? true : false;
 		
-                $strText = htmlspecialchars($text->getText());
+                $strText = $this->_sanitizeText($text->getText());
                 // create array of newlines
                 $str_tmp=explode("\n",$strText);
 
@@ -277,7 +297,7 @@ class PHPWord_Writer_Word2007_Base extends PHPWord_Writer_Word2007_WriterPart {
 						$objWriter->endElement();
 					$objWriter->endElement();
 				} else {
-					$text = htmlspecialchars($text);
+					$text = $this->_sanitizeText($text);
 					$text = PHPWord_Shared_String::ControlCharacterPHP2OOXML($text);
 					
 					$objWriter->startElement('w:r');
@@ -689,7 +709,7 @@ class PHPWord_Writer_Word2007_Base extends PHPWord_Writer_Word2007_WriterPart {
 	}
 	
 	protected function _writeTitle(PHPWord_Shared_XMLWriter $objWriter = null, PHPWord_Section_Title $title) {
-		$text = htmlspecialchars($title->getText());
+		$text = $this->_sanitizeText($title->getText());
 		$text = PHPWord_Shared_String::ControlCharacterPHP2OOXML($text);
 		$anchor = $title->getAnchor();
 		$bookmarkId = $title->getBookmarkId();
