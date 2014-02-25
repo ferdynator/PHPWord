@@ -40,7 +40,7 @@ class PHPWord_Writer_Word2007_Base extends PHPWord_Writer_Word2007_WriterPart {
 	 * @link	http://en.wikipedia.org/wiki/Valid_characters_in_XML
 	 */
 	protected function _sanitizeText($text) {
-		if (!version_compare(phpversion(), '5.4.0', '>=')) {
+		if (version_compare(phpversion(), '5.4.0', '>=')) {
 			$text	= htmlspecialchars($text, ENT_XML1 | ENT_DISALLOWED, 'UTF-8');
 		} else {
 			$text	= htmlspecialchars($text);
